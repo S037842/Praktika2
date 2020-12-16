@@ -2,7 +2,7 @@
 {
     public class Subject
     {
-        private int id, Lecturer;
+        private int id, Lecturer, Group;
         private string Name;
 
         public int getId()
@@ -13,6 +13,11 @@
         public int getLecturer()
         {
             return Lecturer;
+        }
+
+        public int getGroup()
+        {
+            return Group;
         }
 
         public string getName()
@@ -28,6 +33,11 @@
         public void setLecturer(int _lecturer)
         {
             Lecturer = _lecturer;
+        }
+
+        public void setGroup(int _group)
+        {
+            Group = _group;
         }
 
         public void setName(string _name)

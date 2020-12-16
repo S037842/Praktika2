@@ -67,11 +67,19 @@ namespace OL_PRAKTIKA
         private void updateGroupList()
         {
             lGroup.Items.Clear();
+            cGroup.Items.Clear();
+            cStudentGroup.Items.Clear();
 
             groupList = _SQL.readStudentGroup();
 
             for (int i = 0; i < groupList.Count; i++)
                 lGroup.Items.Add(groupList[i].getName());
+
+            for (int i = 0; i < groupList.Count; i++)
+                cGroup.Items.Add(groupList[i].getName());
+
+            for (int i = 0; i < groupList.Count; i++)
+                cStudentGroup.Items.Add(groupList[i].getName());
         }
 
         #endregion
@@ -121,11 +129,15 @@ namespace OL_PRAKTIKA
         private void updateStudentList()
         {
             lStudent.Items.Clear();
+            cStudent.Items.Clear();
 
             studentList = _SQL.readStudent();
 
             for (int i = 0; i < studentList.Count; i++)
                 lStudent.Items.Add(studentList[i].getName() + " " + studentList[i].getSurname());
+
+            for (int i = 0; i < studentList.Count; i++)
+                cStudent.Items.Add(studentList[i].getName() + " " + studentList[i].getSurname());
         }
 
         #endregion
@@ -175,6 +187,8 @@ namespace OL_PRAKTIKA
         private void updateLecturerList()
         {
             lLecturer.Items.Clear();
+            cLecturer.Items.Clear();
+            cLecturer1.Items.Clear();
 
             lecturerList = _SQL.readLecturer();
 
@@ -184,6 +198,9 @@ namespace OL_PRAKTIKA
             //Also updates combobox
             for (int i = 0; i < lecturerList.Count; i++)
                 cLecturer.Items.Add(lecturerList[i].getName() + " " + lecturerList[i].getSurname());
+
+            for (int i = 0; i < lecturerList.Count; i++)
+                cLecturer1.Items.Add(lecturerList[i].getName() + " " + lecturerList[i].getSurname());
         }
 
         #endregion
@@ -222,15 +239,43 @@ namespace OL_PRAKTIKA
         private void updateSubjectList()
         {
             lSubject.Items.Clear();
+            cSubject.Items.Clear();
+            cSubject1.Items.Clear();
 
             subjectList = _SQL.readSubject();
 
             for (int i = 0; i < subjectList.Count; i++)
                 lSubject.Items.Add(subjectList[i].getName());
+
+            for (int i = 0; i < subjectList.Count; i++)
+                cSubject.Items.Add(subjectList[i].getName());
+
+            for (int i = 0; i < subjectList.Count; i++)
+                cSubject1.Items.Add(subjectList[i].getName());
         }
+
 
         #endregion
 
+        private void bLecturerToGroup_Click(object sender, EventArgs e)
+        {
+            _SQL.updateSubjectGroup(groupList[cGroup.SelectedIndex].getId(), subjectList[cSubject.SelectedIndex].getId());
 
+            updateSubjectList();
+        }
+
+        private void bSubjectToLecturer_Click(object sender, EventArgs e)
+        {
+            _SQL.updateSubjectLecturer(lecturerList[cLecturer1.SelectedIndex].getId(), subjectList[cSubject1.SelectedIndex].getId());
+
+            updateSubjectList();
+        }
+
+        private void bStudentToGroup_Click(object sender, EventArgs e)
+        {
+            _SQL.updateStudentGroup(groupList[cStudentGroup.SelectedIndex].getId(), studentList[cStudent.SelectedIndex].getId());
+
+            updateSubjectList();
+        }
     }
 }

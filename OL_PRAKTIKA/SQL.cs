@@ -48,22 +48,22 @@ namespace OL_PRAKTIKA
         {
             using (SQLiteCommand sqlite_cmd = SQLITE_CONNECTION.CreateCommand())
             {
-                sqlite_cmd.CommandText = "CREATE TABLE IF NOT EXISTS Mark (id INTEGER PRIMARY KEY AUTOINCREMENT, Subject INT, Student INT, Mark INT, Date DATE, " +
+                sqlite_cmd.CommandText = "CREATE TABLE IF NOT EXISTS Mark (id INTEGER PRIMARY KEY AUTOINCREMENT, Subject INT, Student INT, Mark INT, " +
                     "FOREIGN KEY (Student) REFERENCES User (id), FOREIGN KEY (Subject) REFERENCES Subject (id))";
 
                 sqlite_cmd.ExecuteNonQuery();
 
-                sqlite_cmd.CommandText = "CREATE TABLE IF NOT EXISTS Role (id INTEGER PRIMARY KEY AUTOINCREMENT, Name VARCHAR(16))";
-                sqlite_cmd.ExecuteNonQuery();
+                //sqlite_cmd.CommandText = "CREATE TABLE IF NOT EXISTS Role (id INTEGER PRIMARY KEY AUTOINCREMENT, Name VARCHAR(16))";
+                //sqlite_cmd.ExecuteNonQuery();
 
                 sqlite_cmd.CommandText = "CREATE TABLE IF NOT EXISTS sGroup (id INTEGER PRIMARY KEY AUTOINCREMENT, Name VARCHAR(32))";
                 sqlite_cmd.ExecuteNonQuery();
 
-                sqlite_cmd.CommandText = "CREATE TABLE IF NOT EXISTS Subject (id INTEGER PRIMARY KEY AUTOINCREMENT, Name VARCHAR(32), Lecturer INT)";
+                sqlite_cmd.CommandText = "CREATE TABLE IF NOT EXISTS Subject (id INTEGER PRIMARY KEY AUTOINCREMENT, Name VARCHAR(32), Lecturer INT, sGroup INT, FOREIGN KEY (sGroup) REFERENCES sGroup (id))";
                 sqlite_cmd.ExecuteNonQuery();
 
                 sqlite_cmd.CommandText = "CREATE TABLE IF NOT EXISTS User (id INTEGER PRIMARY KEY AUTOINCREMENT, Username VARCHAR(32), Password VARCHAR(32), Role INT, Name VARCHAR(32), " +
-                    "Surname VARCHAR(32), sGroup INT, FOREIGN KEY (Role) REFERENCES Role (id), FOREIGN KEY (sGroup) REFERENCES sGroup (id))";
+                    "Surname VARCHAR(32), sGroup INT, FOREIGN KEY (sGroup) REFERENCES sGroup (id))";
 
                 sqlite_cmd.ExecuteNonQuery();
             }
@@ -346,6 +346,225 @@ namespace OL_PRAKTIKA
 
                             result.Add(L);
                         }
+                    }
+                }
+            }
+            return result;
+        }
+
+        public void updateSubjectGroup(int sGroup, int id)
+        {
+            using (SQLiteCommand sqlite_cmd = SQLITE_CONNECTION.CreateCommand())
+            {
+                sqlite_cmd.CommandText = String.Format("UPDATE Subject SET sGroup = '{0}' WHERE id = '{1}'", sGroup, id);
+                MessageBox.Show(sqlite_cmd.CommandText);
+                sqlite_cmd.ExecuteNonQuery();
+            }
+        }
+
+        public void updateSubjectLecturer(int Lecturer, int id)
+        {
+            using (SQLiteCommand sqlite_cmd = SQLITE_CONNECTION.CreateCommand())
+            {
+                sqlite_cmd.CommandText = String.Format("UPDATE Subject SET Lecturer = '{0}' WHERE id='{1}'", Lecturer, id);
+                sqlite_cmd.ExecuteNonQuery();
+            }
+        }
+
+        public void updateStudentGroup(int Group, int id)
+        {
+            using (SQLiteCommand sqlite_cmd = SQLITE_CONNECTION.CreateCommand())
+            {
+                sqlite_cmd.CommandText = String.Format("UPDATE User SET sGroup = '{0}' WHERE id='{1}'", Group, id);
+                sqlite_cmd.ExecuteNonQuery();
+            }
+        }
+
+        public List<Student> readStudentByGroup(int group)
+        {
+            List<Student> result = new List<Student>();
+
+            using (SQLiteCommand sqlite_cmd = SQLITE_CONNECTION.CreateCommand())
+            {
+                sqlite_cmd.CommandText = String.Format("SELECT * FROM User WHERE sGroup = {0}", group);
+
+                using (SQLiteDataReader sqlite_datareader = sqlite_cmd.ExecuteReader())
+                {
+                    while (sqlite_datareader.Read())
+                    {
+                        if (sqlite_datareader.GetInt32(3) == 1)
+                        {
+                            Student S = new Student();
+
+                            //MessageBox.Show(sqlite_datareader.GetInt32(0).ToString());
+
+                            S.setId(sqlite_datareader.GetInt32(0));
+                            S.setName(sqlite_datareader.GetString(1));
+                            S.setSurname(sqlite_datareader.GetString(2));
+
+
+                            result.Add(S);
+                        }
+                    }
+                }
+            }
+            return result;
+        }
+
+        public List<Subject> readSubjectByGroupAndLecturer(int Group, int Lecturer)
+        {
+            List<Subject> result = new List<Subject>();
+
+            using (SQLiteCommand sqlite_cmd = SQLITE_CONNECTION.CreateCommand())
+            {
+                sqlite_cmd.CommandText = String.Format("SELECT * FROM Subject WHERE sGroup = '{0}' AND Lecturer = '{1}'", Group, Lecturer);
+
+                using (SQLiteDataReader sqlite_datareader = sqlite_cmd.ExecuteReader())
+                {
+                    while (sqlite_datareader.Read())
+                    {
+                        Subject S = new Subject();
+
+                        //MessageBox.Show(sqlite_datareader.GetInt32(0).ToString());
+
+                        S.setId(sqlite_datareader.GetInt32(0));
+                        S.setName(sqlite_datareader.GetString(1));
+                        S.setLecturer(sqlite_datareader.GetInt32(2));
+                        S.setGroup(sqlite_datareader.GetInt32(3));
+
+
+                        result.Add(S);
+                    }
+                }
+            }
+            return result;
+        }
+
+        public List<Subject> readSubjectByGroup(int Group)
+        {
+            List<Subject> result = new List<Subject>();
+
+            using (SQLiteCommand sqlite_cmd = SQLITE_CONNECTION.CreateCommand())
+            {
+                sqlite_cmd.CommandText = String.Format("SELECT * FROM Subject WHERE sGroup = '{0}'", Group);
+
+                using (SQLiteDataReader sqlite_datareader = sqlite_cmd.ExecuteReader())
+                {
+                    while (sqlite_datareader.Read())
+                    {
+                        Subject S = new Subject();
+
+                        //MessageBox.Show(sqlite_datareader.GetInt32(0).ToString());
+
+                        S.setId(sqlite_datareader.GetInt32(0));
+                        S.setName(sqlite_datareader.GetString(1));
+                        S.setLecturer(sqlite_datareader.GetInt32(2));
+                        S.setGroup(sqlite_datareader.GetInt32(3));
+
+
+                        result.Add(S);
+                    }
+                }
+            }
+            return result;
+        }
+
+        public int getUserIdByCredentials(string Username, string Password)
+        {
+            int result = 0;
+
+            using (SQLiteCommand sqlite_cmd = SQLITE_CONNECTION.CreateCommand())
+            {
+                sqlite_cmd.CommandText = String.Format("SELECT * FROM User WHERE Username = '{0}' AND Password = '{1}'", Username, Password);
+
+                using (SQLiteDataReader sqlite_datareader = sqlite_cmd.ExecuteReader())
+                {
+                    while (sqlite_datareader.Read())
+                    {
+                        result = sqlite_datareader.GetInt32(0);
+                    }
+                }
+            }
+            return result;
+        }
+
+        public int getMarkExists(int Subject, int Student)
+        {
+            int result = -1;
+
+            using (SQLiteCommand sqlite_cmd = SQLITE_CONNECTION.CreateCommand())
+            {
+                sqlite_cmd.CommandText = String.Format("SELECT * FROM Mark WHERE Subject = '{0}' AND Student = '{1}'", Subject, Student);
+
+                using (SQLiteDataReader sqlite_datareader = sqlite_cmd.ExecuteReader())
+                {
+                    while (sqlite_datareader.Read())
+                    {
+                        result = sqlite_datareader.GetInt32(0);
+                    }
+                }
+            }
+            return result;
+        }
+
+        public void updateMark(int Subject, int Student, int Mark)
+        {
+            int rowid = getMarkExists(Subject, Student);
+
+            if (rowid != -1)
+            {
+                using (SQLiteCommand sqlite_cmd = SQLITE_CONNECTION.CreateCommand())
+                {
+                    sqlite_cmd.CommandText = String.Format("UPDATE Mark SET Subject = '{0}', Student = '{1}', Mark = '{2}' WHERE id='{3}'", 
+                        Subject, Student, Mark, rowid);
+
+                    //MessageBox.Show(sqlite_cmd.CommandText);
+
+                    sqlite_cmd.ExecuteNonQuery();
+                }
+            }
+            else
+            {
+                using (SQLiteCommand sqlite_cmd = SQLITE_CONNECTION.CreateCommand())
+                {
+                    sqlite_cmd.CommandText = String.Format("INSERT INTO Mark (Subject, Student, Mark) VALUES ('{0}', '{1}', '{2}') ", Subject, Student, Mark);
+                    sqlite_cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public int getGroupOfStudent(string Username, string Password)
+        {
+            int result = -1;
+
+            using (SQLiteCommand sqlite_cmd = SQLITE_CONNECTION.CreateCommand())
+            {
+                sqlite_cmd.CommandText = String.Format("SELECT * FROM User WHERE Username = '{0}' AND Password = '{1}'", Username, Password);
+
+                using (SQLiteDataReader sqlite_datareader = sqlite_cmd.ExecuteReader())
+                {
+                    while (sqlite_datareader.Read())
+                    {
+                        result = sqlite_datareader.GetInt32(6);
+                    }
+                }
+            }
+            return result;
+        }
+
+        public int getMark(int Student, int Subject)
+        {
+            int result = -1;
+
+            using (SQLiteCommand sqlite_cmd = SQLITE_CONNECTION.CreateCommand())
+            {
+                sqlite_cmd.CommandText = String.Format("SELECT * FROM Mark WHERE Subject = '{0}' AND Student = '{1}'", Subject, Student);
+
+                using (SQLiteDataReader sqlite_datareader = sqlite_cmd.ExecuteReader())
+                {
+                    while (sqlite_datareader.Read())
+                    {
+                        result = sqlite_datareader.GetInt32(3);
                     }
                 }
             }

@@ -41,7 +41,7 @@
             this.tUsername.Name = "tUsername";
             this.tUsername.Size = new System.Drawing.Size(151, 20);
             this.tUsername.TabIndex = 0;
-            this.tUsername.Text = "admin";
+            this.tUsername.Text = "student";
             // 
             // tPassword
             // 
@@ -49,7 +49,7 @@
             this.tPassword.Name = "tPassword";
             this.tPassword.Size = new System.Drawing.Size(151, 20);
             this.tPassword.TabIndex = 1;
-            this.tPassword.Text = "admin";
+            this.tPassword.Text = "student";
             this.tPassword.UseSystemPasswordChar = true;
             // 
             // button1

@@ -17,10 +17,19 @@ namespace OL_PRAKTIKA
             if (_SQL.userExists(tUsername.Text, tPassword.Text))
             {
                 if (_SQL.getUserRole(tUsername.Text, tPassword.Text) == 1)
-                    new panelStudent().Show();
+                {
+                    int groupId = _SQL.getGroupOfStudent(tUsername.Text, tPassword.Text);
+                    int userId = _SQL.getUserIdByCredentials(tUsername.Text, tPassword.Text);
+
+                    new panelStudent(groupId, userId).Show();
+                }
 
                 if (_SQL.getUserRole(tUsername.Text, tPassword.Text) == 2)
-                    new panelLecturer().Show();
+                {
+                    int userId = _SQL.getUserIdByCredentials(tUsername.Text, tPassword.Text);
+
+                    new panelLecturer(userId).Show();
+                }
 
                 if (_SQL.getUserRole(tUsername.Text, tPassword.Text) == 3)
                     new panelAdmin().Show();

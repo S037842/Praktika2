@@ -117,6 +117,12 @@
     <EmbeddedResource Include="panelAdmin.resx">
       <DependentUpon>panelAdmin.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="panelLecturer.resx">
+      <DependentUpon>panelLecturer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="panelStudent.resx">
+      <DependentUpon>panelStudent.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

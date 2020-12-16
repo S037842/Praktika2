@@ -2,7 +2,7 @@
 {
     public class Student
     {
-        private int id;
+        private int id, Group;
         private string Name, Surname;
 
         public int getId()
@@ -13,6 +13,11 @@
         public void setId(int _id)
         {
             id = _id;
+        }
+
+        public int getGroup()
+        {
+            return Group;
         }
 
         public string getName()
@@ -33,6 +38,11 @@
         public void setSurname(string _surname)
         {
             Surname = _surname;
+        }
+
+        public void setGroup(int _group)
+        {
+            Group = _group;
         }
     }
 }
