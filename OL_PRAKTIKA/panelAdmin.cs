@@ -1,20 +1,236 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace OL_PRAKTIKA
 {
     public partial class panelAdmin : Form
     {
+        SQL _SQL = new SQL();
+
+        List<Group> groupList;
+        List<Student> studentList;
+        List<Subject> subjectList;
+        List<Lecturer> lecturerList;
+
         public panelAdmin()
         {
             InitializeComponent();
         }
+
+        private void panelAdmin_Load(object sender, EventArgs e)
+        {
+            try
+            {
+                updateGroupList();
+                updateStudentList();
+                updateLecturerList();
+                updateSubjectList();
+            }
+            catch
+            {
+
+            }
+        }
+
+        #region Student Group
+
+        private void bCreateGroup_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (_SQL.bStudentGroupExists(tNewGroup.Text))
+                {
+                    MessageBox.Show("Tokia grupė jau egzistuoja!");
+                    return;
+                }
+                else
+                {
+                    lGroup.Items.Clear();
+                    _SQL.insertStudentGroup(tNewGroup.Text);
+                    updateGroupList();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Nepavyko įterpti grupės: " + ex.ToString());
+            }
+        }
+
+        private void bDeleteGroup_Click(object sender, EventArgs e)
+        {
+            _SQL.deleteStudentGroup(groupList[lGroup.SelectedIndex].getId());
+
+            updateGroupList();
+        }
+
+        private void updateGroupList()
+        {
+            lGroup.Items.Clear();
+
+            groupList = _SQL.readStudentGroup();
+
+            for (int i = 0; i < groupList.Count; i++)
+                lGroup.Items.Add(groupList[i].getName());
+        }
+
+        #endregion
+
+        #region Student
+
+        private void bCreateStudent_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (!tNewStudent.Text.Contains(" "))
+                {
+                    MessageBox.Show("Neteisingas vardo pavardės formatas. Formatas: Vardas Pavardė");
+                }
+                else
+                {
+                    string Name = tNewStudent.Text.Split(' ')[0];
+                    string Surname = tNewStudent.Text.Split(' ')[1];
+
+                    if (_SQL.bStudentExists(Name, Surname))
+                    {
+                        MessageBox.Show("Toks studentas jau egzistuoja!");
+                        return;
+                    }
+                    else
+                    {
+                        lStudent.Items.Clear();
+                        _SQL.insertUser(Name, Surname, 1, Name, Surname, 0);
+                        updateStudentList();
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Nepavyko įterpti studento: " + ex.ToString());
+            }
+        }
+
+        private void bDeleteStudent_Click(object sender, EventArgs e)
+        {
+            _SQL.deleteUser(studentList[lStudent.SelectedIndex].getId());
+
+            updateStudentList();
+        }
+
+        private void updateStudentList()
+        {
+            lStudent.Items.Clear();
+
+            studentList = _SQL.readStudent();
+
+            for (int i = 0; i < studentList.Count; i++)
+                lStudent.Items.Add(studentList[i].getName() + " " + studentList[i].getSurname());
+        }
+
+        #endregion
+
+        #region Lecturer
+
+        private void bCreateLecturer_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (!tNewLecturer.Text.Contains(" "))
+                {
+                    MessageBox.Show("Neteisingas vardo pavardės formatas. Formatas: Vardas Pavardė");
+                }
+                else
+                {
+                    string Name = tNewLecturer.Text.Split(' ')[0];
+                    string Surname = tNewLecturer.Text.Split(' ')[1];
+
+                    if (_SQL.bLecturerExists(Name, Surname))
+                    {
+                        MessageBox.Show("Toks dėstytojas jau egzistuoja!");
+                        return;
+                    }
+                    else
+                    {
+                        lLecturer.Items.Clear();
+                        _SQL.insertUser(Name, Surname, 2, Name, Surname, 0);
+                        updateLecturerList();
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Nepavyko įterpti dėstytojo: " + ex.ToString());
+            }
+        }
+
+        private void bDeleteLecturer_Click(object sender, EventArgs e)
+        {
+            _SQL.deleteUser(lecturerList[lLecturer.SelectedIndex].getId());
+
+            updateLecturerList();
+        }
+
+        private void updateLecturerList()
+        {
+            lLecturer.Items.Clear();
+
+            lecturerList = _SQL.readLecturer();
+
+            for (int i = 0; i < lecturerList.Count; i++)
+                lLecturer.Items.Add(lecturerList[i].getName() + " " + lecturerList[i].getSurname());
+
+            //Also updates combobox
+            for (int i = 0; i < lecturerList.Count; i++)
+                cLecturer.Items.Add(lecturerList[i].getName() + " " + lecturerList[i].getSurname());
+        }
+
+        #endregion
+
+        #region Subject
+
+        private void bCreateSubject_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (_SQL.bSubjectExists(tNewSubject.Text))
+                {
+                    MessageBox.Show("Toks dalykas jau egzistuoja!");
+                    return;
+                }
+                else
+                {
+                    lSubject.Items.Clear();
+                    _SQL.insertSubject(tNewSubject.Text, lecturerList[cLecturer.SelectedIndex].getId());
+                    updateSubjectList();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Nepavyko įterpti dalyko: " + ex.ToString());
+            }
+        }
+
+        private void bDeleteSubject_Click(object sender, EventArgs e)
+        {
+            _SQL.deleteSubject(subjectList[lSubject.SelectedIndex].getId());
+
+            updateSubjectList();
+        }
+
+        private void updateSubjectList()
+        {
+            lSubject.Items.Clear();
+
+            subjectList = _SQL.readSubject();
+
+            for (int i = 0; i < subjectList.Count; i++)
+                lSubject.Items.Add(subjectList[i].getName());
+        }
+
+        #endregion
+
+
     }
 }
